@@ -1,0 +1,137 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>invAIR</title>
+ <link rel="stylesheet" href="style.css" />
+ <link rel="icon" href="data:,">
+<script>
+  // фикс "100vh" на мобилках (адресная строка)
+  function setVh() {
+    document.documentElement.style.setProperty("--vh", (window.innerHeight * 0.01) + "px");
+  }
+  window.addEventListener("resize", setVh);
+  window.addEventListener("orientationchange", setVh);
+  setVh();
+</script>
+
+
+  <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
+</head>
+<body>
+<div id="app">
+  <div id="frame"></div>
+  <div id="labels"></div>
+
+  <div id="hudWrap">
+    <div id="hud">
+      <div id="hudHeader">
+        <h1>AIRvin</h1>
+        <button class="hudBtn" id="toggleHud" aria-label="Toggle panel">—</button>
+      </div>
+
+      <div id="hudBody">
+
+  <!-- NORMAL MODE -->
+  <div id="hudNormal">
+    <div class="row">
+      <span class="pill" data-i18n="hud.hint.color">Цвет = AIR (Air to Investment Ratio)</span>
+      <span class="pill" data-i18n="hud.hint.size">Размер = капитал</span>
+      <span class="pill" data-i18n="hud.hint.percent">% = доля сектора в суммарном капитале</span>
+    </div>
+
+    <div class="hint" id="hudHintNormal">
+      • <span data-i18n="hud.info.modeInfo">Режим информации — клик по шару раскрывает/сворачивает список компаний.</span><br/>
+      • <span data-i18n="hud.info.modeHide">Режим скрытия — клик удаляет сектор.</span><br/>
+      • <span data-i18n="hud.info.undo">"Вернуть сектор" восстанавливает последний убранный сектор.</span>
+    </div>
+
+    <div class="row rowBtns">
+      <button class="hudBtn" id="toggleFreeMode" data-tooltip="Свободный режим: выкл">Свободный режим: выкл</button>
+      <button class="hudBtn" id="toggleCompanies" data-tooltip="Отображение подробностей: вкл">Отображение подробностей: вкл</button>
+      <button class="hudBtn" id="undoPop" data-i18n="hud.undoSector" data-tooltip="Вернуть сектор">Вернуть сектор</button>
+      <button class="hudBtn" id="toggleTheme" data-i18n="hud.theme" data-tooltip="Тема">Тема</button>
+    </div>
+  </div>
+
+  <!-- FREE MODE -->
+  <div id="hudFree" style="display:none;">
+    <div class="hint" data-i18n="hud.hint.freeMode">
+      Свободный режим: физика выключена, можно двигать шары и строить граф.
+    </div>
+
+    <div class="row rowBtns">
+      <button class="hudBtn" id="exitFreeMode" data-i18n="hud.exitFreeMode" data-tooltip="Выйти из свободного режима">Выйти из свободного режима</button>
+      <button class="hudBtn" id="toggleFreeLabels" data-tooltip="Информация на шарах: вкл">Информация на шарах: вкл</button>
+      <button class="hudBtn" id="toggleEdgeDraw" data-tooltip="Построение графа: выкл">Построение графа: выкл</button>
+    </div>
+
+    <div class="row rowBtns">
+      <button class="hudBtn" id="freeHideSector" data-tooltip="Убрать сектор">Убрать сектор</button>
+      <button class="hudBtn" id="freeRestoreSector" data-i18n="hud.undoSector" data-tooltip="Вернуть сектор">Вернуть сектор</button>
+      <button class="hudBtn" id="freeShowEdgeMetrics" data-tooltip="Показывать метрику: выкл">Показывать метрику: выкл</button>
+
+      <button class="hudBtn" id="freeDeleteEdge" data-tooltip="Удалить связь">Удалить связь</button>
+      <button class="hudBtn" id="freeClearEdges" data-i18n="hud.clearEdges" data-tooltip="Удалить все связи">Удалить все связи</button>
+      <button class="hudBtn" id="saveFreeConfig" data-i18n="hud.saveConfigLabel" data-tooltip="Сохранить конфигурацию">Сохранить конфигурацию</button>
+      <button class="hudBtn" id="loadFreeConfig" data-i18n="hud.loadConfigLabel" data-tooltip="Загрузить конфигурацию">Загрузить конфигурацию</button>
+      <button class="hudBtn" id="toggleTheme2" data-i18n="hud.theme" data-tooltip="Тема">Тема</button>
+    </div>
+
+    <div class="row">
+      <span class="pill" data-i18n="hud.freeMetricLabel">Метрика графа</span>
+    </div>
+
+    <div class="row">
+      <select id="freeMetricSelect" class="hudSelect">
+        <option value="None">None</option>
+        <option value="trials">Триалы</option>
+        <option value="capital">Инвестиции</option>
+        <option value="air">AIR</option>
+        <option value="All">All</option>
+      </select>
+    </div>
+  </div>
+
+</div>
+
+    </div>
+  </div>
+
+
+
+    <div id="yaxis">
+    <div class="title" data-i18n="yaxis.title">Capital share (Y)</div>
+    <div class="scale" id="scale"></div>
+  </div>
+
+  <!-- Выбор языка -->
+  <div id="langSelector">
+    <button id="langBtn" class="langToggle" aria-label="Select language">EN</button>
+    <div id="langMenu" class="langMenu">
+      <button class="langOption" data-lang="ru">Русский</button>
+      <button class="langOption" data-lang="en">English</button>
+      <button class="langOption" data-lang="zh">中文</button>
+    </div>
+  </div>
+
+  <!-- Панель клинических исследований -->
+  <div id="trialsPanel">
+    <div class="trials-header">
+      <div class="trials-title" id="trialsTitle">Trials</div>
+      <button id="trialsClose" type="button">×</button>
+    </div>
+    <div class="trials-search">
+      <input id="trialsSearch" type="text" placeholder="Поиск по названию, NCT ID или состояниям..." data-i18n-placeholder="trials.search.placeholder" />
+    </div>
+    <div id="trialsStatus"></div>
+    <div id="trialsList"></div>
+  </div>
+
+</div>
+
+<script type="module" src="main.js"></script>
+
+</body>
+</html>
