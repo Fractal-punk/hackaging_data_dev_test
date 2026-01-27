@@ -28,6 +28,15 @@
     <div id="hud">
       <div id="hudHeader">
         <h1>AIRvin</h1>
+        <!-- Выбор языка на мобилке -->
+        <div id="langSelector" class="hudLangSelector">
+          <button id="langBtn" class="langToggle" aria-label="Select language">EN</button>
+          <div id="langMenu" class="langMenu">
+            <button class="langOption" data-lang="ru">Русский</button>
+            <button class="langOption" data-lang="en">English</button>
+            <button class="langOption" data-lang="zh">中文</button>
+          </div>
+        </div>
         <button class="hudBtn" id="toggleHud" aria-label="Toggle panel">—</button>
       </div>
 
@@ -102,18 +111,8 @@
 
 
     <div id="yaxis">
-    <div class="title" data-i18n="yaxis.title">Capital share (Y)</div>
+    <div class="title" data-i18n="yaxis.title">Доля сектора</div>
     <div class="scale" id="scale"></div>
-  </div>
-
-  <!-- Выбор языка -->
-  <div id="langSelector">
-    <button id="langBtn" class="langToggle" aria-label="Select language">EN</button>
-    <div id="langMenu" class="langMenu">
-      <button class="langOption" data-lang="ru">Русский</button>
-      <button class="langOption" data-lang="en">English</button>
-      <button class="langOption" data-lang="zh">中文</button>
-    </div>
   </div>
 
   <!-- Панель клинических исследований -->

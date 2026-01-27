@@ -84,7 +84,7 @@ function applyLabelsInteractivity() {
   labels.classList.toggle("freeNoUI", freeMode.on && !freeMode.labelsEnabled);
 }
 
-// SVG иконки для мобильных кнопок
+// SVG иконки для мобильных кнопок - используем для атрибутов data
 const SVG_ICONS = {
   toggleFreeMode: `<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" stroke="currentColor" stroke-width="1.33" stroke-linecap="round"><circle cx="6" cy="12" r="3"/><circle cx="17" cy="7" r="3"/><circle cx="17" cy="17" r="3"/><line x1="6" y1="12" x2="17" y2="7" stroke-width="1.33" stroke-linecap="round"/><line x1="6" y1="12" x2="17" y2="17" stroke-width="1.33" stroke-linecap="round"/></svg>`,
   toggleCompanies: `<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor"><circle cx="12" cy="12" r="8"/><text x="12" y="13.6" text-anchor="middle" dominant-baseline="middle" font-size="11" fill="currentColor">T</text></svg>`,
@@ -108,23 +108,36 @@ function initMobileButtonIcons() {
   
   if (!isMobile) return;
 
-  // Добавляем иконки к кнопкам
+  // Добавляем SVG иконки прямо в кнопки
   for (const [btnId, svgHtml] of Object.entries(SVG_ICONS)) {
     const btn = document.getElementById(btnId);
-    if (btn) {
-      // Очищаем текст кнопки и добавляем SVG
-      btn.innerHTML = svgHtml;
+    if (btn && btn.textContent.trim()) {  // Проверяем что кнопка существует и имеет текст
+      // Сохраняем оригинальный текст, но скрываем его через CSS
+      // Добавляем SVG как первый элемент
+      const svgWrapper = document.createElement('span');
+      svgWrapper.innerHTML = svgHtml;
+      svgWrapper.style.display = 'flex';
+      svgWrapper.style.alignItems = 'center';
+      svgWrapper.style.justifyContent = 'center';
+      svgWrapper.style.width = '24px';
+      svgWrapper.style.height = '24px';
+      
+      btn.innerHTML = '';
+      btn.appendChild(svgWrapper);
     }
   }
 }
 
 
 export function initHudControls() {
-  // Инициализируем мобильные иконки если нужно
-  initMobileButtonIcons();
+  // Инициализируем мобильные иконки когда DOM полностью готов
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initMobileButtonIcons);
+  } else {
+    initMobileButtonIcons();
+  }
   
   const btnToggleFreeMode = document.getElementById("toggleFreeMode");
-    const hudNormal = document.getElementById("hudNormal");
   const hudFree = document.getElementById("hudFree");
 
   const btnExitFreeMode = document.getElementById("exitFreeMode");

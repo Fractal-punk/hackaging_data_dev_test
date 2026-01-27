@@ -244,7 +244,13 @@
       gap: 10px;
       margin-bottom: 8px;
     }
-    #hud h1 { margin: 0; font-size: 14px; font-weight: 800; letter-spacing: 0.2px; }
+    #hud h1 { margin: 0; font-size: 14px; font-weight: 800; letter-spacing: 0.2px; flex: 1; }
+
+    /* Языковой переключатель в hudHeader */
+    .hudLangSelector {
+      position: relative;
+      display: none;
+    }
 
     .hudBtn {
       pointer-events: auto;
@@ -828,10 +834,13 @@ body.strict .hudSelectOption:hover{
 
   /* На мобилке скрываем текст кнопок, показываем иконки */
   .hudBtn {
-    font-size: 0;
     min-width: 50px;
     min-height: 50px;
     padding: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
   }
 
   .hudBtn::before {
@@ -859,6 +868,21 @@ body.strict .hudSelectOption:hover{
     opacity: 1;
   }
 
+  /* SVG внутри кнопок */
+  .hudBtn svg {
+    width: 24px;
+    height: 24px;
+    display: block;
+  }
+
+  .hudBtn span {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+  }
+
   #hud .hint{ font-size: 13px; }
   #hud .pill{ font-size: 12px; }
   
@@ -866,10 +890,28 @@ body.strict .hudSelectOption:hover{
   /* y-axis на мобилке часто мешает — прячем */
   #yaxis{ display: none; }
 
-  /* Language selector на мобилке */
+  /* Language selector на мобилке в hudHeader */
+  .hudLangSelector {
+    display: block !important;
+    position: relative;
+    order: -1;  /* Расположить слева от h1 */
+  }
+
   #langSelector {
-    top: 60px;
-    right: 10px;
+    position: static;
+    top: auto;
+    right: auto;
+    z-index: auto;
+  }
+
+  .langToggle {
+    padding: 6px 8px;
+    font-size: 11px;
+    border-radius: 8px;
+  }
+
+  .langMenu {
+    min-width: 120px;
   }
 
   /* подписи в шарах: чуть меньше */
