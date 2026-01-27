@@ -1,0 +1,1092 @@
+    html, body {
+  height: 100%;
+  margin: 0;
+  overflow: hidden;
+  }
+
+  body{
+  background:
+    radial-gradient(1200px 600px at 20% 35%, rgba(60,130,255,0.14), transparent 60%),
+    radial-gradient(900px 500px at 70% 60%, rgba(130,255,180,0.10), transparent 60%),
+    linear-gradient(180deg, rgba(255,255,255,0.03), rgba(0,0,0,0.15)),
+    #0b0f16;
+  }
+
+  /* реальная высота экрана на мобилках */
+  #app {
+    position: relative;
+    width: 100%;
+    height: calc(var(--vh, 1vh) * 100);
+    overflow: hidden;
+  }
+
+   canvas{
+  position: absolute;
+  inset: 0;
+  display: block;
+  cursor: crosshair;
+  z-index: 1;
+
+  }
+
+
+    #frame{
+      position: absolute; inset: 18px;
+      border-radius: 16px;
+      border: 1px solid rgba(255,255,255,0.10);
+      box-shadow: 0 16px 60px rgba(0,0,0,0.45);
+      pointer-events: none;
+      z-index: 0;
+      background: transparent; /* <-- ключ */
+    }
+        /* ---------- AIR tooltip ---------- */
+    #airTip{
+    position: absolute;
+    z-index: 4;
+    pointer-events: none;
+    transform: translate(-50%, -110%);
+    padding: 6px 8px;
+    border-radius: 10px;
+    font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+    font-size: 12px;
+    font-weight: 900;
+    letter-spacing: 0.2px;
+    color: rgba(255, 255, 255, 0.96);
+    background: rgba(0,0,0,0.55);
+    border: 1px solid rgba(255,255,255,0.14);
+    box-shadow: 0 10px 24px rgba(0,0,0,0.35);
+    backdrop-filter: blur(8px);
+    display: none;
+    white-space: nowrap;
+    }
+
+
+
+    body.strict{
+      background: #848484 !important;
+    }
+
+    body.strict #frame{
+      border: 1px solid rgba(0,0,0,0.10);
+      box-shadow: none;
+    }
+
+
+
+    #labels {
+      position: absolute; inset: 0;
+      pointer-events: none;
+      z-index: 2;
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+    }
+    #hudWrap{ z-index: 3; }
+    #yaxis  { z-index: 3; }
+    #labels, #hudWrap, #yaxis { overflow: visible; }
+    /* В свободном режиме можно "заморозить" все интерактивные элементы лейблов */
+    #labels.freeNoUI .inball,
+    #labels.freeNoUI .inball * {
+      pointer-events: none !important;
+    }
+
+    /* В free-mode при labelsEnabled=false: отключаем кликабельность лейблов */
+    #labels.freeNoUI { pointer-events: none; }
+
+    /* но сами лейблы и так pointer-events:none, кликабельны только companies / trialLink */
+
+
+
+
+    .inball {
+      position: absolute;
+      transform:
+        translate(-50%, -50%)
+        scale(var(--inball-scale, 1));
+      transform-origin: center center;
+      text-align: center;
+      color: rgba(255,255,255,0.96);
+      font-weight: 900;
+      letter-spacing: 0.2px;
+      text-shadow:
+        0 2px 18px rgba(0,0,0,0.55),
+        0 0 22px rgba(0,0,0,0.35);
+      user-select: none;
+    
+      will-change: transform, left, top, opacity;
+    }
+    .inball .companies,
+    .inball .trialLink {
+    pointer-events: auto;
+    }
+
+    .inball.expanded {
+      pointer-events: none;
+     }
+     .inball.expanded .companies,
+      .inball.expanded .trialLink,
+      .inball.expanded [data-role="trial-link"],
+      .inball.expanded a {
+        pointer-events: auto;
+      }
+
+    .inball:not(.expanded) .trialLink {
+      pointer-events: none;
+      opacity: 0.55;
+    }
+
+        /* Невидимая "кнопка" вокруг текста, чтобы попадать пальцем легче */
+    .inball::before{
+      content: "";
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      width: 120px;
+      height: 120px;
+      transform: translate(-50%, -50%);
+      border-radius: 999px;
+      pointer-events: none;
+      background: transparent;
+    }
+
+
+
+    .inball .cap { font-size: 22px; opacity: 0.92; line-height: 1.05; pointer-events: none;}
+    .inball .ret { font-size: 26px; line-height: 1.05; margin-top: 2px; pointer-events: none;}
+    .inball .name {
+      font-size: 13px;
+      font-weight: 800;
+      opacity: 0.95;
+      line-height: 1.1;
+      margin-bottom: 4px;
+      white-space: nowrap;
+      max-width: 220px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      pointer-events: none;
+    }
+    .inball .meta {
+      font-size: 12px;
+      font-weight: 700;
+      opacity: 0.92;
+      line-height: 1.1;
+      margin-bottom: 6px;
+      white-space: nowrap;
+      pointer-events: none;
+    }
+
+    .inball .companies {
+      display: none;
+      margin-top: 6px;
+      font-size: 12px;
+      font-weight: 700;
+      opacity: 0.95;
+      line-height: 1.2;
+      max-width: 260px;
+      max-height: 140px;
+      overflow: auto;
+      padding: 6px 8px;
+      border-radius: 12px;
+      background: rgba(0,0,0,0.35);
+      border: 1px solid rgba(255,255,255,0.10);
+      backdrop-filter: blur(6px);
+      pointer-events: auto;
+    }
+
+    .inball .companies .title {
+      font-weight: 900;
+      font-size: 12px;
+      opacity: 0.95;
+      margin-bottom: 6px;
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .inball .companies ul {
+      margin: 0;
+      padding: 0 0 0 16px;
+    }
+    .inball .companies li {
+      margin: 2px 0;
+    }
+
+    .inball.expanded .companies { display: block; }
+    .inball.expanded .ret { opacity: 0.55; }
+    .inball.expanded .meta { opacity: 0.70; }
+
+    /* ---------- HUD (сворачиваемый) ---------- */
+    #hudWrap {
+      position: absolute; left: 26px; top: 26px;
+      width: 340px;
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+      color: rgba(255,255,255,0.94);
+      pointer-events: none;
+    }
+
+    #hud {
+      pointer-events: auto;
+      border-radius: 14px;
+      padding: 12px 12px 10px;
+      background: rgba(0,0,0,0.42);
+      border: 1px solid rgba(255,255,255,0.14);
+      backdrop-filter: blur(10px);
+      overflow: hidden;
+      transition: max-height 220ms ease, opacity 220ms ease, transform 220ms ease;
+      max-height: 360px;
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    #hudHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 8px;
+  }
+
+  .hudTitleRow {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  #hud h1 {
+    margin: 0;
+    font-size: 14px;
+    font-weight: 800;
+    letter-spacing: 0.2px;
+  }
+
+
+    .hudBtn {
+      pointer-events: auto;
+      border: 1px solid rgba(255,255,255,0.16);
+      background: rgba(255,255,255,0.08);
+      color: rgba(255,255,255,0.96);
+      padding: 8px 10px;
+      border-radius: 10px;
+      cursor: pointer;
+      font-weight: 800;
+      line-height: 1;
+      user-select: none;
+    }
+    .hudBtn:hover { background: rgba(255,255,255,0.12); }
+
+    #hudBody {
+    transition: opacity 200ms ease, transform 200ms ease;
+    opacity: 1;
+    transform: translateY(0);
+
+    /* скролл появляется только при переполнении */
+    overflow: auto;
+
+    /* ограничение по высоте — работает и на ПК, и на мобилке */
+    max-height: min(320px, calc((var(--vh, 1vh) * 100) - 130px));
+    padding-right: 6px; /* чтобы скролл не наезжал на текст */
+    }
+
+
+    #hud .row { display: flex; gap: 10px; align-items: center; margin: 8px 0; flex-wrap: wrap; }
+    
+    /* Мобильная адаптация: кнопки в сетку */
+    @media (pointer: coarse), (max-width: 820px) {
+      #hud .row.rowBtns {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(55px, 1fr));
+        gap: 8px;
+        width: 100%;
+      }
+    }
+    
+    #hud .hint { font-size: 12px; opacity: 0.86; line-height: 1.35; }
+    #hud .pill {
+      display: inline-flex;
+      border-radius: 999px;
+      padding: 4px 8px;
+      border: 1px solid rgba(255,255,255,0.16);
+      background: rgba(255,255,255,0.08);
+      font-size: 12px;
+      opacity: 0.95;
+    }
+    #hud .row.rowBtns{
+      flex-direction: column;
+      align-items: stretch;
+    }
+
+
+    #hud.collapsed #hudBody {
+    opacity: 0;
+    transform: translateY(-6px);
+    pointer-events: none;
+    height: 0;
+    max-height: 0;
+    overflow: hidden;
+    }
+
+ /* Нативный select прячем, но оставляем в DOM для логики */
+.hudSelectNative {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* Обёртка кастомного селекта */
+.hudSelectWrap {
+  position: relative;
+  width: 100%;
+}
+
+/* Кнопка, которая выглядит как селект (уже твой стиль, чуть допилил) */
+.hudSelectFake{
+  width: 100%;
+  pointer-events: auto;
+
+  border-radius: 10px;
+  padding: 8px 10px;
+  font-weight: 800;
+  font-size: 13px;
+
+  border: 1px solid rgba(255,255,255,0.16);
+  background: rgba(0,0,0,0.50);
+  color: rgba(225,235,255,0.96);
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+
+  cursor: pointer;
+}
+
+/* Строгая тема — светлый фейк-селект */
+body.strict .hudSelectFake{
+  border: 1px solid rgba(0,0,0,0.18);
+  background: rgba(255,255,255,0.96);
+  color: rgba(0,0,0,0.92);
+}
+
+/* Стрелочка справа */
+.hudSelectArrow{
+  font-size: 11px;
+  opacity: 0.8;
+}
+
+/* Выпадающее меню */
+.hudSelectMenu{
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: calc(100% + 4px);
+
+  border-radius: 10px;
+  overflow: hidden;
+
+  background: rgba(3,6,14,0.96);
+  border: 1px solid rgba(255,255,255,0.18);
+  box-shadow: 0 14px 30px rgba(0,0,0,0.65);
+
+  z-index: 20;
+  display: none;
+}
+
+/* Строгая тема — светлое меню */
+body.strict .hudSelectMenu{
+  background: rgba(255,255,255,0.98);
+  border-color: rgba(0,0,0,0.16);
+  box-shadow: 0 12px 26px rgba(0,0,0,0.15);
+}
+
+/* Открытое меню */
+.hudSelectWrap.open .hudSelectMenu{
+  display: block;
+}
+
+/* Пункты меню */
+.hudSelectOption{
+  width: 100%;
+  text-align: left;
+  padding: 7px 10px;
+  border: none;
+  background: transparent;
+  color: rgba(225,235,255,0.96);
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+}
+.hudSelectOption:hover{
+  background: rgba(255,255,255,0.09);
+}
+
+/* Строгая тема — пункты */
+body.strict .hudSelectOption{
+  color: rgba(0,0,0,0.92);
+}
+body.strict .hudSelectOption:hover{
+  background: rgba(0,0,0,0.06);
+}
+
+
+
+
+
+    /* ---------- Y axis ---------- */
+    #yaxis {
+      position: absolute; right: 30px; top: 26px; bottom: 26px;
+      width: 120px;
+      pointer-events: none;
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+      color: rgba(255,255,255,0.80);
+    }
+    #yaxis .title { font-size: 12px; opacity: 0.95; margin-bottom: 8px; font-weight: 700; }
+    #yaxis .scale {
+      position: absolute; top: 24px; bottom: 0; left: 20px; right: 0;
+      border-left: 1px solid rgba(255,255,255,0.18);
+    }
+    #yaxis .tick {
+      position: absolute; left: -6px;
+      width: 6px; height: 1px;
+      background: rgba(255,255,255,0.22);
+    }
+    #yaxis .ticklabel {
+      position: absolute; left: -64px;
+      width: 56px; text-align: right;
+      font-size: 11px; opacity: 0.82;
+      transform: translateY(-50%);
+    }
+
+    /* ---------- Language selector ---------- */
+    #langSelector {
+      position: relative;
+      z-index: 3;
+      pointer-events: auto;
+    }
+
+
+    .langToggle {
+      border-radius: 10px;
+      padding: 8px 12px;
+      border: 1px solid rgba(255,255,255,0.16);
+      background: rgba(0,0,0,0.42);
+      color: rgba(255,255,255,0.94);
+      font-weight: 800;
+      font-size: 12px;
+      cursor: pointer;
+      backdrop-filter: blur(10px);
+      transition: background 120ms ease, border-color 120ms ease;
+      letter-spacing: 0.2px;
+    }
+
+    .langToggle:hover {
+      background: rgba(255,255,255,0.12);
+      border-color: rgba(255,255,255,0.24);
+    }
+
+    body.strict .langToggle {
+      background: rgba(255,255,255,0.95);
+      border-color: rgba(0,0,0,0.14);
+      color: rgba(0,0,0,0.92);
+    }
+
+    body.strict .langToggle:hover {
+      background: rgba(255,255,255,0.98);
+      border-color: rgba(0,0,0,0.20);
+    }
+
+    /* Language menu */
+    .langMenu {
+      position: absolute;
+      top: calc(100% + 6px);
+      left: 0;
+      display: none;
+      flex-direction: column;
+      border-radius: 10px;
+      background: rgba(3,6,14,0.96);
+      border: 1px solid rgba(255,255,255,0.18);
+      box-shadow: 0 14px 30px rgba(0,0,0,0.65);
+      overflow: hidden;
+      min-width: 140px;
+      z-index: 25;
+    }
+
+    #langSelector.open .langMenu {
+      display: flex;
+    }
+
+    body.strict .langMenu {
+      background: rgba(255,255,255,0.98);
+      border-color: rgba(0,0,0,0.16);
+      box-shadow: 0 12px 26px rgba(0,0,0,0.15);
+    }
+
+    .langOption {
+      text-align: left;
+      padding: 8px 12px;
+      border: none;
+      background: transparent;
+      color: rgba(225,235,255,0.96);
+      font-size: 12px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: background 100ms ease;
+    }
+
+    .langOption:hover {
+      background: rgba(255,255,255,0.09);
+    }
+
+    .langOption.active {
+      background: rgba(100,180,255,0.20);
+      font-weight: 900;
+    }
+
+    body.strict .langOption {
+      color: rgba(0,0,0,0.92);
+    }
+
+    body.strict .langOption:hover {
+      background: rgba(0,0,0,0.06);
+    }
+
+    body.strict .langOption.active {
+      background: rgba(100,150,255,0.15);
+    }
+
+        /* ---------- Trials panel ---------- */
+    #trialsPanel{
+      position: absolute;
+      top: 26px;
+      right: 26px;
+      bottom: 26px;
+      width: min(420px, 32%);
+      max-width: 460px;
+      z-index: 4;
+      display: none;
+      flex-direction: column;
+      border-radius: 16px;
+      background: rgba(3,6,14,0.94);
+      border: 1px solid rgba(255,255,255,0.18);
+      box-shadow: 0 18px 40px rgba(0,0,0,0.55);
+      backdrop-filter: blur(14px);
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+      color: rgba(255,255,255,0.96);
+      pointer-events: auto;
+    }
+
+    body.strict #trialsPanel{
+      background: rgba(255, 255, 255, 0.98);
+      border-color: rgba(0,0,0,0.16);
+      box-shadow: 0 18px 40px rgba(0,0,0,0.10);
+      color: rgba(0,0,0,0.92);
+    }
+
+    .trials-header{
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      padding: 10px 12px 8px;
+      border-bottom: 1px solid rgba(255,255,255,0.16);
+    }
+    body.strict .trials-header{
+      border-bottom-color: rgba(0,0,0,0.10);
+    }
+
+    .trials-title{
+      font-size: 13px;
+      font-weight: 800;
+      letter-spacing: 0.25px;
+      text-transform: uppercase;
+      opacity: 0.96;
+    }
+
+    #trialsClose{
+      border-radius: 999px;
+      border: 1px solid rgba(255,255,255,0.25);
+      background: rgba(255,255,255,0.08);
+      color: inherit;
+      cursor: pointer;
+      padding: 4px 8px;
+      font-weight: 800;
+      font-size: 13px;
+    }
+    #trialsClose:hover{
+      background: rgba(255,255,255,0.14);
+    }
+    body.strict #trialsClose{
+      border-color: rgba(0,0,0,0.20);
+      background: rgba(0,0,0,0.04);
+    }
+    body.strict #trialsClose:hover{
+      background: rgba(0,0,0,0.08);
+    }
+
+        .trials-search{
+      padding: 8px 12px 6px 2px; /* top right bottom left (12 - 10 = 2) */
+      border-bottom: 1px solid rgba(255,255,255,0.14);
+    }
+
+    body.strict .trials-search{
+      border-bottom-color: rgba(0,0,0,0.10);
+    }
+
+        #trialsSearch{
+      width: calc(92%);
+      margin-left: 10px;      /* сдвиг на 10px влево */
+      padding: 6px 8px;
+      border-radius: 8px;
+      border: 1px solid rgba(255,255,255,0.28);
+      background: rgba(0,0,0,0.45);
+      color: inherit;
+      font-size: 12px;
+      outline: none;
+    }
+
+    #trialsSearch::placeholder{
+      color: rgba(255,255,255,0.65);
+    }
+    body.strict #trialsSearch{
+      background: rgba(0,0,0,0.03);
+      border-color: rgba(0,0,0,0.16);
+      color: rgba(0,0,0,0.92);
+    }
+    body.strict #trialsSearch::placeholder{
+      color: rgba(0,0,0,0.50);
+    }
+
+    #trialsStatus{
+      padding: 4px 12px 4px;
+      font-size: 11px;
+      opacity: 0.80;
+    }
+
+    #trialsList{
+      flex: 1;
+      padding: 6px 8px 10px;
+      overflow: auto;
+    }
+
+    .trialItem{
+      padding: 6px 6px 7px;
+      border-radius: 10px;
+      border: 1px solid rgba(255,255,255,0.12);
+      background: rgba(0,0,0,0.35);
+      margin-bottom: 6px;
+      font-size: 11px;
+      line-height: 1.35;
+    }
+    .trialItem:last-child{
+      margin-bottom: 0;
+    }
+
+    body.strict .trialItem{
+      background: rgba(0,0,0,0.03);
+      border-color: rgba(0,0,0,0.10);
+    }
+
+    .trialTitle{
+      font-weight: 800;
+      font-size: 11px;
+      margin-bottom: 3px;
+    }
+
+    .trialTitle a{
+      color: inherit;
+      text-decoration: none;
+      border-bottom: 1px dashed rgba(255,255,255,0.3);
+    }
+    .trialTitle a:hover{
+      border-bottom-style: solid;
+    }
+    body.strict .trialTitle a{
+      border-bottom-color: rgba(0,0,0,0.35);
+    }
+
+    .trialMetaLine{
+      opacity: 0.85;
+      margin-bottom: 3px;
+    }
+
+    .trialConditions{
+      opacity: 0.80;
+    }
+
+    .trialSummary{
+      margin-top: 4px;
+      opacity: 0.80;
+    }
+
+    /* Trials link внутри карточки сектора */
+    .trialRow{
+      margin-bottom: 4px;
+    }
+
+    .trialLink{
+      border: none;
+      padding: 3px 8px;
+      border-radius: 999px;
+      font-size: 11px;
+      font-weight: 800;
+      cursor: pointer;
+      background: rgba(255,255,255,0.10);
+      color: rgba(255,255,255,0.96);
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+    }
+    .trialLink:hover{
+      background: rgba(255,255,255,0.18);
+    }
+    body.strict .trialLink{
+      background: rgba(0,0,0,0.04);
+      color: rgba(0,0,0,0.92);
+    }
+    body.strict .trialLink:hover{
+      background: rgba(0,0,0,0.08);
+    }
+
+    .trialHint{
+      font-size: 10px;
+      opacity: 0.75;
+      margin-top: 2px;
+    }
+
+        /* ---------- THEME: strict ---------- */
+    body.strict {
+    background: #e1e1e1 !important;
+    }
+
+    body.strict #frame{
+    border: 1px solid rgb(225, 225, 225);
+    box-shadow: none;
+    background: #e1e1e1;
+    
+    background-attachment: fixed;      /* фиксируем к viewport */
+    background-repeat: no-repeat;
+    background-size: cover;    
+    }
+
+    body.strict canvas { cursor: crosshair; }
+
+    body.strict #hud{
+    background: rgba(255,255,255,0.95);
+    border: 1px solid rgba(0,0,0,0.14);
+    backdrop-filter: none;
+    color: rgba(0,0,0,0.92);
+    }
+
+    body.strict .hudBtn{
+    border: 1px solid rgba(0,0,0,0.18);
+    background: rgba(0,0,0,0.04);
+    color: rgba(0,0,0,0.92);
+    }
+    body.strict .hudBtn:hover{ background: rgba(0,0,0,0.07); }
+
+    body.strict #hud .pill{
+    border: 1px solid rgba(0,0,0,0.18);
+    background: rgba(0,0,0,0.03);
+    color: rgba(0,0,0,0.90);
+    }
+
+    body.strict #yaxis{
+    color: rgba(0,0,0,0.70);
+    }
+    body.strict #yaxis .scale{
+    border-left: 1px solid rgba(0,0,0,0.20);
+    }
+    body.strict #yaxis .tick{
+    background: rgba(0,0,0,0.25);
+    }
+    body.strict #yaxis .ticklabel{
+    color: rgba(0,0,0,0.65);
+    }
+
+    body.strict .inball{
+    color: rgba(0,0,0,0.92);
+    text-shadow: none;
+    }
+
+    body.strict .inball .companies{
+    background: rgba(255,255,255,0.92);
+    border: 1px solid rgba(0,0,0,0.14);
+    backdrop-filter: none;
+    }
+
+    body.strict .inball.expanded .ret { opacity: 0.55; }
+    body.strict .inball.expanded .meta { opacity: 0.70; }
+
+    /* ---------- MOBILE / COARSE POINTER ---------- */
+@media (pointer: coarse), (max-width: 820px) {
+  #frame {
+    inset: 10px;
+    border-radius: 14px;
+  }
+
+  /* canvas – да, контейнеры – нет */
+  canvas {
+    touch-action: none;
+  }
+
+  /* остальной мобильный стиль как у тебя сейчас */
+  #hudWrap{
+    left: 10px;
+    top: 10px;
+    width: min(92vw, 360px);
+  }
+
+  /* кнопки — больше hit-area */
+  .hudBtn{
+    padding: 12px 12px;
+    border-radius: 12px;
+    font-size: 14px;
+    position: relative;
+    overflow: visible;
+  }
+
+  /* На мобилке скрываем текст кнопок, показываем иконки */
+  .hudBtn {
+    min-width: 50px;
+    min-height: 50px;
+    padding: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    font-size: 0;  /* Скрываем текст */
+    line-height: 0;  /* Дополнительное скрытие текста */
+    min-height: 50px;
+    min-width: 50px;
+    width: 50px;
+    height: 50px;
+  }
+
+  .hudBtn::before {
+    content: '';
+    width: 24px;
+    height: 24px;
+    display: block;
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+    flex-shrink: 0;
+  }
+
+  #toggleHud::before {
+    background-image: url("./icons/hud_collapse.svg");
+  }
+
+  /* Когда панель свёрнута (hudCollapsed = true)
+     — на кнопке появляется класс is-collapsed
+       и мы показываем иконку "развернуть" */
+  #toggleHud.is-collapsed::before {
+    background-image: url("./icons/hud_expand.svg");
+  }
+
+}
+
+  /* Иконки для каждой кнопки */
+  
+  @media (pointer: coarse), (max-width: 820px) {
+
+  #toggleCompanies::before {
+    background-image: url("./icons/sector_info_off.svg");
+  }
+
+  #toggleCompanies.is-on::before {
+    background-image: url("./icons/sector_info_on.svg");
+  }
+
+}
+
+  @media (pointer: coarse), (max-width: 820px) {
+
+  #toggleFreeLabels::before {
+    background-image: url("./icons/sector_info_off.svg");
+  }
+
+  #toggleFreeLabels.is-on::before {
+    background-image: url("./icons/sector_info_on.svg");
+  }
+
+}
+
+
+  @media (pointer: coarse), (max-width: 820px) {
+
+  #toggleEdgeDraw::before {
+    background-image: url("./icons/graph_off.svg");
+  }
+
+  #toggleEdgeDraw.is-on::before {
+    background-image: url("./icons/graph_on.svg");
+  }
+
+}
+
+
+  @media (pointer: coarse), (max-width: 820px) {
+
+  #freeHideSector::before {
+    background-image: url("./icons/bubble_pop_off.svg");
+  }
+
+  #freeHideSector.is-on::before {
+    background-image: url("./icons/bubble_pop_on.svg");
+  }
+
+}
+
+  @media (pointer: coarse), (max-width: 820px) {
+
+  #freeShowEdgeMetrics::before {
+    background-image: url("./icons/show_metrics_off.svg");
+  }
+
+  #freeShowEdgeMetrics.is-on::before {
+    background-image: url("./icons/show_metrics_on.svg");
+  }
+
+}
+
+
+  @media (pointer: coarse), (max-width: 820px) {
+
+  #freeDeleteEdge::before {
+    background-image: url("./icons/delete_edge_off.svg");
+  }
+
+  #freeDeleteEdge.is-on::before {
+    background-image: url("./icons/delete_edge_on.svg");
+  }
+
+}
+
+
+@media (pointer: coarse), (max-width: 820px) {
+
+  #undoPop::before,
+  #freeRestoreSector::before {
+    background-image: url("./icons/undo_bubble_pop.svg");
+  }
+
+  #freeClearEdges::before {
+    background-image: url("./icons/delete_all_edges.svg");
+  }
+
+  #saveFreeConfig::before {
+    background-image: url("./icons/save_snapshot.svg");
+  }
+
+  #loadFreeConfig::before {
+    background-image: url("./icons/load_snapshot.svg");
+  }
+
+  #exitFreeMode::before {
+    background-image: url("./icons/exit_free_mode.svg");
+  }
+
+  #toggleFreeMode::before {
+    background-image: url("./icons/free_mode.svg");
+  }
+
+  #toggleTheme::before,
+  #toggleTheme2::before {
+    background-image: url("./icons/theme_switch.svg");
+  }
+
+}
+
+@media (pointer: coarse), (max-width: 820px) {
+  /* Тултипы поверх иконок */
+  .hudBtn::after {
+    content: attr(data-tooltip);
+    position: absolute;
+    bottom: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(0, 0, 0, 0.9);
+    color: #fff;
+    padding: 8px 12px;
+    border-radius: 8px;
+    white-space: nowrap;
+    font-size: 12px;
+    pointer-events: none;
+    z-index: 1000;
+    opacity: 0;
+    transition: opacity 0.2s;
+    margin-bottom: 8px;
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  }
+
+  .hudBtn:active::after,
+  .hudBtn:focus::after {
+    opacity: 1;
+  }
+
+  /* SVG внутри кнопок */
+  .hudBtn svg {
+    width: 24px;
+    height: 24px;
+    display: block;
+  }
+
+  .hudBtn span {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+  }
+
+  #hud .hint{ font-size: 13px; }
+  #hud .pill{ font-size: 12px; }
+  
+
+  /* y-axis на мобилке часто мешает — прячем */
+  #yaxis{ display: none; }
+
+  
+  /* подписи в шарах: чуть меньше */
+  .inball .cap { font-size: 18px; }
+  .inball .ret { font-size: 22px; }
+  .inball .name{ font-size: 12px; max-width: 180px; }
+
+  /* tooltip hover смысла не имеет */
+  #airTip{ display: none !important; }
+
+  /* Trials panel как bottom-sheet */
+  #trialsPanel{
+    left: 10px;
+    right: 10px;
+    top: auto;
+    bottom: 10px;
+    width: auto;
+    max-width: none;
+    height: min(70vh, 520px);
+    border-radius: 16px;
+  }
+
+  #trialsList{ -webkit-overflow-scrolling: touch; }
+}
+
+/* iOS safe-area */
+@supports (padding: max(0px)) {
+  @media (pointer: coarse), (max-width: 820px) {
+    #hudWrap{
+      left: max(10px, env(safe-area-inset-left));
+      top:  max(10px, env(safe-area-inset-top));
+    }
+    #trialsPanel{
+      left: max(10px, env(safe-area-inset-left));
+      right: max(10px, env(safe-area-inset-right));
+      bottom: max(10px, env(safe-area-inset-bottom));
+    }
+    html, body { overscroll-behavior: none; }
+    #app { overscroll-behavior: none; }
+  }
+}
+
+@media (pointer: coarse), (max-width: 820px) {
+  canvas{ touch-action: none; }
+}
+
