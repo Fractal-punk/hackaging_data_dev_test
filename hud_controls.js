@@ -533,6 +533,12 @@ export function initLangSelector() {
     }
   };
 
+    const applyLangToBody = () => {
+    const currentLang = getLang();
+    document.body.dataset.lang = currentLang; // <body data-lang="ru|en|zh">
+  };
+
+
   // Обновляем текст кнопки в соответствии с текущим языком
   const updateLangBtn = () => {
     const currentLang = getLang();
@@ -559,6 +565,8 @@ export function initLangSelector() {
   updateLangBtn();
   updateLangOptions();
   updateAllI18nElements();
+  applyLangToBody();
+  
 
   // Клик по кнопке — открыть/закрыть меню
   langBtn.addEventListener("click", (e) => {
@@ -588,6 +596,7 @@ export function initLangSelector() {
     updateLangBtn();
     updateLangOptions();
     updateAllI18nElements();
+    applyLangToBody();
   });
 }
 
