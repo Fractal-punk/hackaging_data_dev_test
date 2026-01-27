@@ -304,17 +304,19 @@ renderer.domElement.addEventListener("pointerdown", (e) => {
   downTime = performance.now();
   moved = false;
     // --- FREE MODE: удаление конкретного ребра кликом ---
-    if (freeMode.edgeDeleteMode) {
-      // если кликнули не по UI
-      if (!isUIAtPoint(e.clientX, e.clientY)) {
-        const edgeId = pickEdgeIdAt(e.clientX, e.clientY, camera, renderer.domElement);
-        if (edgeId) {
-          removeEdge(edgeId);
-          rebuildGraph();
-          e.preventDefault();
-          return;
-        }
-      }
+  if (freeMode.edgeDeleteMode && !isUIAtPoint(e.clientX, e.clientY)) {
+    const edgeId = pickEdgeIdAt(
+      e.clientX,
+      e.clientY,
+      camera,
+      renderer.domElement
+    );
+    if (edgeId) {
+      removeEdge(edgeId);
+      rebuildGraph();
+      e.preventDefault();
+      return; // ← только если действительно удалили ребро
+    }
       // если не попали по ребру — ничего не делаем (и не тащим шары)
       e.preventDefault();
       return;
@@ -338,9 +340,6 @@ renderer.domElement.addEventListener("pointerdown", (e) => {
       touchPanStarted = false;
       isPanning = false;
       panButton = null;
-
-      e.preventDefault();
-      return;
     }
 
     // ----- ОДИН ПАЛЕЦ -----
