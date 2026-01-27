@@ -860,15 +860,16 @@ body.strict .hudSelectOption:hover{
     height: 50px;
   }
 
-  /* Тёмная тема (default) */
-  body:not(.strict) .hudBtn {
-    color: rgba(255,255,255,0.96);
+  
+  body:not(.strict) .hudBtn::before {
+    filter: invert(1);
   }
 
-  /* Строгая тема */
-  body.strict .hudBtn {
-    color: rgba(0,0,0,0.92);
+  /* В строгой теме иконки остаются как в файлах (чёрные) */
+  body.strict .hudBtn::before {
+    filter: none;
   }
+
   .hudBtn::before {
     content: '';
     width: 24px;
