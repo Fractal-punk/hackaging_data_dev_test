@@ -238,13 +238,26 @@
     }
 
     #hudHeader {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 10px;
-      margin-bottom: 8px;
-    }
-    #hud h1 { margin: 0; font-size: 14px; font-weight: 800; letter-spacing: 0.2px; }
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 8px;
+  }
+
+  .hudTitleRow {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  #hud h1 {
+    margin: 0;
+    font-size: 14px;
+    font-weight: 800;
+    letter-spacing: 0.2px;
+  }
+
 
     .hudBtn {
       pointer-events: auto;
@@ -444,12 +457,11 @@ body.strict .hudSelectOption:hover{
 
     /* ---------- Language selector ---------- */
     #langSelector {
-      position: absolute;
-      top: 26px;
-      right: 156px;
+      position: relative;
       z-index: 3;
       pointer-events: auto;
     }
+
 
     .langToggle {
       border-radius: 10px;
@@ -805,12 +817,17 @@ body.strict .hudSelectOption:hover{
 
     /* ---------- MOBILE / COARSE POINTER ---------- */
 @media (pointer: coarse), (max-width: 820px) {
-  #frame { inset: 10px; border-radius: 14px; }
-    #app { touch-action: none; }
-  #labels { touch-action: none; }
-  canvas { touch-action: none; }
+  #frame {
+    inset: 10px;
+    border-radius: 14px;
+  }
 
-  /* HUD — компактнее и ближе к краям */
+  /* canvas – да, контейнеры – нет */
+  canvas {
+    touch-action: none;
+  }
+
+  /* остальной мобильный стиль как у тебя сейчас */
   #hudWrap{
     left: 10px;
     top: 10px;
@@ -959,12 +976,7 @@ body.strict .hudSelectOption:hover{
   /* y-axis на мобилке часто мешает — прячем */
   #yaxis{ display: none; }
 
-  /* Language selector на мобилке */
-  #langSelector {
-    top: 60px;
-    right: 10px;
-  }
-
+  
   /* подписи в шарах: чуть меньше */
   .inball .cap { font-size: 18px; }
   .inball .ret { font-size: 22px; }

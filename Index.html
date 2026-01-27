@@ -25,13 +25,28 @@
   <div id="labels"></div>
 
   <div id="hudWrap">
-    <div id="hud">
-      <div id="hudHeader">
+  <div id="hud">
+    <div id="hudHeader">
+      <div class="hudTitleRow">
         <h1>AIRvin</h1>
-        <button class="hudBtn" id="toggleHud" aria-label="Toggle panel">—</button>
+
+        <!-- Выбор языка (перенесён сюда) -->
+        <div id="langSelector">
+          <button id="langBtn" class="langToggle" aria-label="Select language">EN</button>
+          <div id="langMenu" class="langMenu">
+            <button class="langOption" data-lang="ru">Русский</button>
+            <button class="langOption" data-lang="en">English</button>
+            <button class="langOption" data-lang="zh">中文</button>
+          </div>
+        </div>
       </div>
 
-      <div id="hudBody">
+      <button class="hudBtn" id="toggleHud" aria-label="Toggle panel">—</button>
+    </div>
+
+    <div id="hudBody">
+ 
+
 
   <!-- NORMAL MODE -->
   <div id="hudNormal">
@@ -106,15 +121,7 @@
     <div class="scale" id="scale"></div>
   </div>
 
-  <!-- Выбор языка -->
-  <div id="langSelector">
-    <button id="langBtn" class="langToggle" aria-label="Select language">EN</button>
-    <div id="langMenu" class="langMenu">
-      <button class="langOption" data-lang="ru">Русский</button>
-      <button class="langOption" data-lang="en">English</button>
-      <button class="langOption" data-lang="zh">中文</button>
-    </div>
-  </div>
+  
 
   <!-- Панель клинических исследований -->
   <div id="trialsPanel">
