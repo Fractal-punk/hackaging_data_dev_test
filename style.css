@@ -871,6 +871,19 @@ body.strict .hudSelectOption:hover{
     flex-shrink: 0;
   }
 
+  #toggleHud::before {
+    background-image: url("./icons/hud_collapse.svg");
+  }
+
+  /* Когда панель свёрнута (hudCollapsed = true)
+     — на кнопке появляется класс is-collapsed
+       и мы показываем иконку "развернуть" */
+  #toggleHud.is-collapsed::before {
+    background-image: url("./icons/hud_expand.svg");
+  }
+
+}
+
   /* Иконки для каждой кнопки */
   
   @media (pointer: coarse), (max-width: 820px) {
@@ -972,6 +985,10 @@ body.strict .hudSelectOption:hover{
     background-image: url("./icons/exit_free_mode.svg");
   }
 
+  #toggleFreeMode::before {
+    background-image: url("./icons/free_mode.svg");
+  }
+
   #toggleTheme::before,
   #toggleTheme2::before {
     background-image: url("./icons/theme_switch.svg");
@@ -979,7 +996,7 @@ body.strict .hudSelectOption:hover{
 
 }
 
-
+@media (pointer: coarse), (max-width: 820px) {
   /* Тултипы поверх иконок */
   .hudBtn::after {
     content: attr(data-tooltip);

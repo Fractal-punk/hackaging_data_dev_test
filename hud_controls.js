@@ -44,14 +44,25 @@ function setToggleState(btn, isOn, i18nKeyOn, i18nKeyOff) {
     btn.classList.toggle("is-on", !!isOn);
   }
 
-function applyHudState(hud, btnToggleHud) {
-  hud.classList.toggle("collapsed", hudCollapsed);
-  btnToggleHud.textContent = hudCollapsed ? "≡" : "—";
-  btnToggleHud.setAttribute(
-    "aria-label",
-    hudCollapsed ? t("hud.togglePanel.expand") : t("hud.togglePanel.collapse")
-  );
-}
+  function applyHudState(hud, btnToggleHud) {
+    hud.classList.toggle("collapsed", hudCollapsed);
+
+    const labelKey = hudCollapsed ? "hud.togglePanel.expand" : "hud.togglePanel.collapse";
+    const label = t(labelKey);
+
+    // текст — для десктопа; на мобиле всё равно скрывается font-size:0
+    btnToggleHud.textContent = hudCollapsed ? "≡" : "—";
+
+    // tooltip — чтобы на мобиле подсказка была актуальной
+    btnToggleHud.dataset.tooltip = label;
+
+    // класс состояния — для выбора иконки
+    btnToggleHud.classList.toggle("is-collapsed", hudCollapsed);
+
+    // aria-label для доступности
+    btnToggleHud.setAttribute("aria-label", label);
+  }
+
 
 function applyCompaniesModeUI(btnToggleCompanies) {
   setToggleState(
