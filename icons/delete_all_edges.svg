@@ -1,0 +1,21 @@
+<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"
+     width="24" height="24"
+     fill="currentColor"
+     stroke="currentColor" stroke-width="1.33" stroke-linecap="round">
+
+  <!-- узлы -->
+  <circle cx="6"   cy="12" r="3"/>
+  <circle cx="19.2" cy="7"  r="3"/>
+  <circle cx="19.2" cy="17" r="3"/>
+
+  <!-- короткие отрезки от центрального узла -->
+  <line x1="7.8" y1="11" x2="10"   y2="10" />
+  <line x1="7.8" y1="13" x2="10"   y2="14" />
+
+  <!-- короткие отрезки от верхнего правого узла -->
+  <line x1="17.3" y1="8"  x2="15.5" y2="9"  />
+
+  <!-- короткие отрезки от нижнего правого узла -->
+  <line x1="17.3" y1="16" x2="15.5" y2="15" />
+
+</svg>

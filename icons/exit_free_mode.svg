@@ -1,0 +1,20 @@
+<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"
+     width="24" height="24" fill="none"
+     stroke="currentColor" stroke-width="1.5"
+     stroke-linecap="round" stroke-linejoin="round">
+
+  <!-- дверной проём -->
+  <line x1="6"  y1="4" x2="18" y2="4" />   <!-- верхняя перекладина -->
+  <line x1="6"  y1="4" x2="6"  y2="20" />  <!-- левая стойка -->
+  <line x1="6"  y1="20" x2="18" y2="20" /> <!-- низ -->
+
+  <!-- правая короткая стойка (новая) -->
+  <line x1="18" y1="4" x2="18" y2="6" />
+
+  <!-- полотно двери -->
+  <path d="M11 4 L18 6 L18 20 L11 18 Z" />
+
+  <!-- ручка двери -->
+  <circle cx="16" cy="12.5" r="0.7" fill="currentColor" stroke="none" />
+
+</svg>

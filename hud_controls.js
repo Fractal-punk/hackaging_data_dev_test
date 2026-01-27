@@ -28,6 +28,21 @@ export function setCompaniesMode(v) { companiesMode = !!v; }
 const isCoarse = matchMedia("(pointer: coarse)").matches;
 let hudCollapsed = isCoarse;
 
+function setToggleState(btn, isOn, i18nKeyOn, i18nKeyOff) {
+    if (!btn) return;
+
+    const key = isOn ? i18nKeyOn : i18nKeyOff;
+    const label = t(key);
+
+    // текст – для десктопа
+    btn.textContent = label;
+
+    // tooltip – для мобилки
+    btn.dataset.tooltip = label;
+
+    // класс состояния – для иконок
+    btn.classList.toggle("is-on", !!isOn);
+  }
 
 function applyHudState(hud, btnToggleHud) {
   hud.classList.toggle("collapsed", hudCollapsed);
@@ -39,9 +54,14 @@ function applyHudState(hud, btnToggleHud) {
 }
 
 function applyCompaniesModeUI(btnToggleCompanies) {
-  const key = companiesMode ? "hud.detailsMode.on" : "hud.detailsMode.off";
-  btnToggleCompanies.textContent = t(key);
+  setToggleState(
+    btnToggleCompanies,
+    companiesMode,
+    "hud.detailsMode.on",
+    "hud.detailsMode.off"
+  );
 }
+
 
 function restoreLastPopped() {
   if (poppedStack.length === 0) return;
@@ -106,12 +126,19 @@ export function initHudControls() {
   const btnFreeDeleteEdge = document.getElementById("freeDeleteEdge");
   const btnFreeShowEdgeMetrics = document.getElementById("freeShowEdgeMetrics");
 
+  
+
+
 
 function applyEdgeDeleteUI() {
-  if (!btnFreeDeleteEdge) return;
-  const key = freeMode.edgeDeleteMode ? "hud.deleteEdge.on" : "hud.deleteEdge.off";
-  btnFreeDeleteEdge.textContent = t(key);
-}
+    if (!btnFreeDeleteEdge) return;
+    setToggleState(
+      btnFreeDeleteEdge,
+      freeMode.edgeDeleteMode,
+      "hud.deleteEdge.on",
+      "hud.deleteEdge.off"
+    );
+  }
 
   if (freeMetricSelect) {
     // стартовое значение
@@ -139,8 +166,12 @@ if (btnFreeDeleteEdge) {
 
   function applyShowEdgeMetricsUI() {
     if (!btnFreeShowEdgeMetrics) return;
-    const key = freeMode.showEdgeMetrics ? "hud.showEdgeMetric.on" : "hud.showEdgeMetric.off";
-    btnFreeShowEdgeMetrics.textContent = t(key);
+    setToggleState(
+      btnFreeShowEdgeMetrics,
+      freeMode.showEdgeMetrics,
+      "hud.showEdgeMetric.on",
+      "hud.showEdgeMetric.off"
+    );
   }
 
     if (btnFreeShowEdgeMetrics) {
@@ -227,8 +258,12 @@ if (btnFreeDeleteEdge) {
 
     function applyFreeHideModeUI() {
     if (!btnFreeHideMode) return;
-    const key = freeMode.deleteMode ? "hud.hideSector.on" : "hud.hideSector.off";
-    btnFreeHideMode.textContent = t(key);
+    setToggleState(
+      btnFreeHideMode,
+      freeMode.deleteMode,
+      "hud.hideSector.on",
+      "hud.hideSector.off"
+    );
   }
 
 
@@ -267,14 +302,22 @@ if (btnFreeDeleteEdge) {
 
   function applyFreeLabelsUI() {
     if (!btnToggleFreeLabels) return;
-    const key = freeMode.labelsEnabled ? "hud.labels.on" : "hud.labels.off";
-    btnToggleFreeLabels.textContent = t(key);
+    setToggleState(
+      btnToggleFreeLabels,
+      freeMode.labelsEnabled,
+      "hud.labels.on",
+      "hud.labels.off"
+    );
   }
 
   function applyEdgeDrawUI() {
     if (!btnToggleEdgeDraw) return;
-    const key = freeMode.edgeDrawMode ? "hud.edgeDraw.on" : "hud.edgeDraw.off";
-    btnToggleEdgeDraw.textContent = t(key);
+    setToggleState(
+      btnToggleEdgeDraw,
+      freeMode.edgeDrawMode,
+      "hud.edgeDraw.on",
+      "hud.edgeDraw.off"
+    );
   }
 
     // уже есть toggleFreeMode — дополним
@@ -338,11 +381,16 @@ if (btnFreeDeleteEdge) {
 
   if (btnToggleTheme2) btnToggleTheme2.addEventListener("click", () => toggleTheme());
 
-  function applyFreeModeUI() {
+    function applyFreeModeUI() {
     if (!btnToggleFreeMode) return;
-    const key = freeMode.on ? "hud.freeMode.on" : "hud.freeMode.off";
-    btnToggleFreeMode.textContent = t(key);
+    setToggleState(
+      btnToggleFreeMode,
+      freeMode.on,
+      "hud.freeMode.on",
+      "hud.freeMode.off"
+    );
   }
+
 
   const hud = document.getElementById("hud");
   const btnToggleHud = document.getElementById("toggleHud");

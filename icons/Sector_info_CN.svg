@@ -1,0 +1,13 @@
+<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"
+     width="24" height="24"
+     fill="none" stroke="currentColor" stroke-width="1.5">
+  <circle cx="12" cy="12" r="8" />
+  <text x="12" y="12.32"
+        text-anchor="middle"
+        dominant-baseline="middle"
+        font-size="10.78"
+        font-family="system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif"
+        fill="currentColor">
+    文
+  </text>
+</svg>
