@@ -244,13 +244,7 @@
       gap: 10px;
       margin-bottom: 8px;
     }
-    #hud h1 { margin: 0; font-size: 14px; font-weight: 800; letter-spacing: 0.2px; flex: 1; }
-
-    /* Языковой переключатель в hudHeader */
-    .hudLangSelector {
-      position: relative;
-      display: none;
-    }
+    #hud h1 { margin: 0; font-size: 14px; font-weight: 800; letter-spacing: 0.2px; }
 
     .hudBtn {
       pointer-events: auto;
@@ -841,9 +835,84 @@ body.strict .hudSelectOption:hover{
     align-items: center;
     justify-content: center;
     flex-shrink: 0;
+    font-size: 0;  /* Скрываем текст */
+    line-height: 0;  /* Дополнительное скрытие текста */
+    min-height: 50px;
+    min-width: 50px;
+    width: 50px;
+    height: 50px;
   }
 
   .hudBtn::before {
+    content: '';
+    width: 24px;
+    height: 24px;
+    display: block;
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+    flex-shrink: 0;
+  }
+
+  /* Иконки для каждой кнопки */
+  #toggleFreeMode::before {
+    background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg viewBox='0 0 24 24' xmlns='http://www.w3.org/2000/svg' fill='currentColor' stroke='currentColor' stroke-width='1.33' stroke-linecap='round'%3E%3Ccircle cx='6' cy='12' r='3'/%3E%3Ccircle cx='17' cy='7' r='3'/%3E%3Ccircle cx='17' cy='17' r='3'/%3E%3Cline x1='6' y1='12' x2='17' y2='7' stroke-width='1.33' stroke-linecap='round'/%3E%3Cline x1='6' y1='12' x2='17' y2='17' stroke-width='1.33' stroke-linecap='round'/%3E%3C/svg%3E");
+  }
+
+  #toggleCompanies::before {
+    background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg viewBox='0 0 24 24' xmlns='http://www.w3.org/2000/svg' fill='currentColor'%3E%3Ccircle cx='12' cy='12' r='8'/%3E%3Ctext x='12' y='14' text-anchor='middle' font-size='10' fill='white'%3ET%3C/text%3E%3C/svg%3E");
+  }
+
+  #undoPop::before {
+    background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg viewBox='0 0 24 24' xmlns='http://www.w3.org/2000/svg' fill='currentColor'%3E%3Cpath d='M11 10 L13 11 L12 13 L10 12 Z'/%3E%3Cpath d='M7.5 11 L9 12.5 L7.2 13.4 L6.5 12 Z'/%3E%3Cpath d='M15.5 11 L17.2 12 L16 13.5 L14.5 12.2 Z'/%3E%3C/svg%3E");
+  }
+
+  #toggleTheme::before {
+    background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg viewBox='0 0 24 24' xmlns='http://www.w3.org/2000/svg' fill='currentColor' stroke='currentColor' stroke-width='0.75' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='5.8' cy='12' r='3'/%3E%3Crect x='15.8' y='9' width='6' height='6' rx='0.5'/%3E%3Cline x1='10.3' y1='12' x2='14.3' y2='12'/%3E%3Cpolyline points='11.3,11 10.3,12 11.3,13'/%3E%3Cpolyline points='13.3,11 14.3,12 13.3,13'/%3E%3C/svg%3E");
+  }
+
+  #exitFreeMode::before {
+    background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg viewBox='0 0 24 24' xmlns='http://www.w3.org/2000/svg' fill='none' stroke='currentColor' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cline x1='6' y1='4' x2='18' y2='4'/%3E%3Cline x1='6' y1='4' x2='6' y2='20'/%3E%3Cline x1='6' y1='20' x2='18' y2='20'/%3E%3Cline x1='18' y1='4' x2='18' y2='6'/%3E%3Cpath d='M11 4 L18 6 L18 20 L11 18 Z'/%3E%3Ccircle cx='16' cy='12.5' r='0.7' fill='currentColor' stroke='none'/%3E%3C/svg%3E");
+  }
+
+  #toggleFreeLabels::before {
+    background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg viewBox='0 0 24 24' xmlns='http://www.w3.org/2000/svg' fill='none' stroke='currentColor' stroke-width='1.5'%3E%3Ccircle cx='12' cy='12' r='8'/%3E%3Ctext x='12' y='14' text-anchor='middle' font-size='10' fill='currentColor'%3ET%3C/text%3E%3C/svg%3E");
+  }
+
+  #toggleEdgeDraw::before {
+    background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg viewBox='0 0 24 24' xmlns='http://www.w3.org/2000/svg' fill='currentColor' stroke='currentColor' stroke-width='1.33' stroke-linecap='round'%3E%3Ccircle cx='6' cy='12' r='3'/%3E%3Ccircle cx='17' cy='7' r='3'/%3E%3Ccircle cx='17' cy='17' r='3'/%3E%3C/svg%3E");
+  }
+
+  #freeHideSector::before {
+    background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg viewBox='0 0 24 24' xmlns='http://www.w3.org/2000/svg' fill='none' stroke='currentColor' stroke-width='1.5'%3E%3Ccircle cx='12' cy='12' r='8'/%3E%3C/svg%3E");
+  }
+
+  #freeRestoreSector::before {
+    background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg viewBox='0 0 24 24' xmlns='http://www.w3.org/2000/svg' fill='currentColor'%3E%3Cpath d='M11 10 L13 11 L12 13 L10 12 Z'/%3E%3Cpath d='M7.5 11 L9 12.5 L7.2 13.4 L6.5 12 Z'/%3E%3C/svg%3E");
+  }
+
+  #freeShowEdgeMetrics::before {
+    background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg viewBox='0 0 24 24' xmlns='http://www.w3.org/2000/svg' fill='none' stroke='currentColor' stroke-width='1.5' stroke-linecap='round'%3E%3Cline x1='4.8' y1='12' x2='19.2' y2='12'/%3E%3Ctext x='12' y='9' text-anchor='middle' font-size='5.5' fill='currentColor'%3ET%3C/text%3E%3C/svg%3E");
+  }
+
+  #freeDeleteEdge::before {
+    background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg viewBox='0 0 24 24' xmlns='http://www.w3.org/2000/svg' fill='currentColor' stroke='currentColor' stroke-width='1.5' stroke-linecap='round'%3E%3Ccircle cx='5.3' cy='12' r='2.5'/%3E%3Ccircle cx='18.7' cy='12' r='2.5'/%3E%3Cline x1='7.8' y1='12' x2='10.6' y2='12'/%3E%3Cline x1='13.4' y1='12' x2='16.2' y2='12'/%3E%3C/svg%3E");
+  }
+
+  #freeClearEdges::before {
+    background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg viewBox='0 0 24 24' xmlns='http://www.w3.org/2000/svg' fill='currentColor' stroke='currentColor' stroke-width='1.33' stroke-linecap='round'%3E%3Ccircle cx='6' cy='12' r='3'/%3E%3Ccircle cx='19.2' cy='7' r='3'/%3E%3Ccircle cx='19.2' cy='17' r='3'/%3E%3Cline x1='7.8' y1='11' x2='10' y2='10'/%3E%3Cline x1='7.8' y1='13' x2='10' y2='14'/%3E%3C/svg%3E");
+  }
+
+  #saveFreeConfig::before {
+    background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg viewBox='0 0 24 24' xmlns='http://www.w3.org/2000/svg' fill='none' stroke='currentColor' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 4h9l3 3v13H6z'/%3E%3Crect x='7.5' y='5.5' width='7' height='4' rx='0.7'/%3E%3Crect x='8' y='13' width='8' height='5' rx='0.7'/%3E%3C/svg%3E");
+  }
+
+  #loadFreeConfig::before {
+    background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg viewBox='0 0 24 24' xmlns='http://www.w3.org/2000/svg' fill='none' stroke='currentColor' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 4h9l3 3v13H6z'/%3E%3Cline x1='12' y1='16' x2='12' y2='9'/%3E%3Cpolyline points='9.5,11.5 12,9 14.5,11.5'/%3E%3C/svg%3E");
+  }
+
+  /* Тултипы поверх иконок */
+  .hudBtn::after {
     content: attr(data-tooltip);
     position: absolute;
     bottom: 100%;
@@ -863,8 +932,8 @@ body.strict .hudSelectOption:hover{
     font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   }
 
-  .hudBtn:active::before,
-  .hudBtn:focus::before {
+  .hudBtn:active::after,
+  .hudBtn:focus::after {
     opacity: 1;
   }
 
@@ -890,28 +959,10 @@ body.strict .hudSelectOption:hover{
   /* y-axis на мобилке часто мешает — прячем */
   #yaxis{ display: none; }
 
-  /* Language selector на мобилке в hudHeader */
-  .hudLangSelector {
-    display: block !important;
-    position: relative;
-    order: -1;  /* Расположить слева от h1 */
-  }
-
+  /* Language selector на мобилке */
   #langSelector {
-    position: static;
-    top: auto;
-    right: auto;
-    z-index: auto;
-  }
-
-  .langToggle {
-    padding: 6px 8px;
-    font-size: 11px;
-    border-radius: 8px;
-  }
-
-  .langMenu {
-    min-width: 120px;
+    top: 60px;
+    right: 10px;
   }
 
   /* подписи в шарах: чуть меньше */

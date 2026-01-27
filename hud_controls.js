@@ -84,59 +84,11 @@ function applyLabelsInteractivity() {
   labels.classList.toggle("freeNoUI", freeMode.on && !freeMode.labelsEnabled);
 }
 
-// SVG иконки для мобильных кнопок - используем для атрибутов data
-const SVG_ICONS = {
-  toggleFreeMode: `<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" stroke="currentColor" stroke-width="1.33" stroke-linecap="round"><circle cx="6" cy="12" r="3"/><circle cx="17" cy="7" r="3"/><circle cx="17" cy="17" r="3"/><line x1="6" y1="12" x2="17" y2="7" stroke-width="1.33" stroke-linecap="round"/><line x1="6" y1="12" x2="17" y2="17" stroke-width="1.33" stroke-linecap="round"/></svg>`,
-  toggleCompanies: `<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor"><circle cx="12" cy="12" r="8"/><text x="12" y="13.6" text-anchor="middle" dominant-baseline="middle" font-size="11" fill="currentColor">T</text></svg>`,
-  undoPop: `<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor"><path d="M11 10 L13 11 L12 13 L10 12 Z"/><path d="M7.5 11 L9 12.5 L7.2 13.4 L6.5 12 Z"/><path d="M15.5 11 L17.2 12 L16 13.5 L14.5 12.2 Z"/></svg>`,
-  toggleTheme: `<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" stroke="currentColor" stroke-width="0.75" stroke-linecap="round" stroke-linejoin="round"><circle cx="5.8" cy="12" r="3"/><rect x="15.8" y="9" width="6" height="6" rx="0.5"/><line x1="10.3" y1="12" x2="14.3" y2="12"/><polyline points="11.3,11 10.3,12 11.3,13"/><polyline points="13.3,11 14.3,12 13.3,13"/></svg>`,
-  exitFreeMode: `<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><line x1="6" y1="4" x2="18" y2="4"/><line x1="6" y1="4" x2="6" y2="20"/><line x1="6" y1="20" x2="18" y2="20"/><line x1="18" y1="4" x2="18" y2="6"/><path d="M11 4 L18 6 L18 20 L11 18 Z"/><circle cx="16" cy="12.5" r="0.7" fill="currentColor" stroke="none"/></svg>`,
-  toggleFreeLabels: `<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="8"/><text x="12" y="13.6" text-anchor="middle" dominant-baseline="middle" font-size="11" fill="currentColor">T</text></svg>`,
-  toggleEdgeDraw: `<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" stroke="currentColor" stroke-width="1.33" stroke-linecap="round"><circle cx="6" cy="12" r="3"/><circle cx="17" cy="7" r="3"/><circle cx="17" cy="17" r="3"/></svg>`,
-  freeHideSector: `<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="8"/></svg>`,
-  freeRestoreSector: `<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor"><path d="M11 10 L13 11 L12 13 L10 12 Z"/><path d="M7.5 11 L9 12.5 L7.2 13.4 L6.5 12 Z"/></svg>`,
-  freeShowEdgeMetrics: `<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><line x1="4.8" y1="12" x2="19.2" y2="12"/><text x="12" y="9" text-anchor="middle" dominant-baseline="middle" font-size="5.5" fill="currentColor">T</text></svg>`,
-  freeDeleteEdge: `<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><circle cx="5.3" cy="12" r="2.5"/><circle cx="18.7" cy="12" r="2.5"/><line x1="7.8" y1="12" x2="10.6" y2="12"/><line x1="13.4" y1="12" x2="16.2" y2="12"/></svg>`,
-  freeClearEdges: `<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" stroke="currentColor" stroke-width="1.33" stroke-linecap="round"><circle cx="6" cy="12" r="3"/><circle cx="19.2" cy="7" r="3"/><circle cx="19.2" cy="17" r="3"/><line x1="7.8" y1="11" x2="10" y2="10"/><line x1="7.8" y1="13" x2="10" y2="14"/></svg>`,
-  saveFreeConfig: `<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 4h9l3 3v13H6z"/><rect x="7.5" y="5.5" width="7" height="4" rx="0.7"/><rect x="8" y="13" width="8" height="5" rx="0.7"/></svg>`,
-  loadFreeConfig: `<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 4h9l3 3v13H6z"/><line x1="12" y1="16" x2="12" y2="9"/><polyline points="9.5,11.5 12,9 14.5,11.5"/></svg>`,
-};
 
-function initMobileButtonIcons() {
-  // Проверяем если это мобильное устройство
-  const isMobile = matchMedia("(pointer: coarse)").matches || window.innerWidth <= 820;
-  
-  if (!isMobile) return;
 
-  // Добавляем SVG иконки прямо в кнопки
-  for (const [btnId, svgHtml] of Object.entries(SVG_ICONS)) {
-    const btn = document.getElementById(btnId);
-    if (btn && btn.textContent.trim()) {  // Проверяем что кнопка существует и имеет текст
-      // Сохраняем оригинальный текст, но скрываем его через CSS
-      // Добавляем SVG как первый элемент
-      const svgWrapper = document.createElement('span');
-      svgWrapper.innerHTML = svgHtml;
-      svgWrapper.style.display = 'flex';
-      svgWrapper.style.alignItems = 'center';
-      svgWrapper.style.justifyContent = 'center';
-      svgWrapper.style.width = '24px';
-      svgWrapper.style.height = '24px';
-      
-      btn.innerHTML = '';
-      btn.appendChild(svgWrapper);
-    }
-  }
-}
-
+// SVG иконки больше не используются - иконки добавлены через CSS background-image в style.css
 
 export function initHudControls() {
-  // Инициализируем мобильные иконки когда DOM полностью готов
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', initMobileButtonIcons);
-  } else {
-    initMobileButtonIcons();
-  }
-  
   const btnToggleFreeMode = document.getElementById("toggleFreeMode");
   const hudFree = document.getElementById("hudFree");
 
