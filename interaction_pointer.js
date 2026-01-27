@@ -135,6 +135,8 @@ let freeDragPending = false;
 let freeDragBubble = null;
 let freeDragPlane = new THREE.Plane(new THREE.Vector3(0, 0, 1), 0); // z = const
 let freeEdgePointerId = null; // чтобы понимать чей pointerup завершает протяжку
+// --- Edge-delete tap candidate ---
+let downEdgeId = null;
 
 
 function distance(a, b) {
@@ -303,8 +305,9 @@ renderer.domElement.addEventListener("pointerdown", (e) => {
   downY = e.clientY;
   downTime = performance.now();
   moved = false;
-    // --- FREE MODE: удаление конкретного ребра кликом ---
-  if (freeMode.edgeDeleteMode && !isUIAtPoint(e.clientX, e.clientY)) {
+        // --- EDGE DELETE: запоминаем, по какому ребру "нажали" (но не удаляем сразу) ---
+  downEdgeId = null;
+  if (freeMode.on && freeMode.edgeDeleteMode && !isUIAtPoint(e.clientX, e.clientY)) {
     const edgeId = pickEdgeIdAt(
       e.clientX,
       e.clientY,
@@ -312,15 +315,10 @@ renderer.domElement.addEventListener("pointerdown", (e) => {
       renderer.domElement
     );
     if (edgeId) {
-      removeEdge(edgeId);
-      rebuildGraph();
-      e.preventDefault();
-      return; // ← только если действительно удалили ребро
+      downEdgeId = edgeId;
     }
-      // если не попали по ребру — ничего не делаем (и не тащим шары)
-      e.preventDefault();
-      return;
-    }
+  }
+
 
     // MOBILE (touch)
   if (isCoarse && e.pointerType === "touch") {
@@ -340,6 +338,9 @@ renderer.domElement.addEventListener("pointerdown", (e) => {
       touchPanStarted = false;
       isPanning = false;
       panButton = null;
+
+      e.preventDefault();
+      return;
     }
 
     // ----- ОДИН ПАЛЕЦ -----
@@ -651,6 +652,23 @@ window.addEventListener("pointermove", (e) => {
 
 // pointerup
 window.addEventListener("pointerup", (e) => {
+
+  // --- EDGE DELETE TAP (до остальной логики кликов/драгов) ---
+  if (
+    freeMode.on &&
+    freeMode.edgeDeleteMode &&
+    downEdgeId &&
+    !moved && // тот же TAP-порог, что и для пузырей
+    !isUIAtPoint(e.clientX, e.clientY)
+  ) {
+    removeEdge(downEdgeId);
+    rebuildGraph();
+    downEdgeId = null;
+    e.preventDefault();
+    return;
+  }
+  downEdgeId = null;
+  
   // ---------- FREE MODE: finish drag / finish edge ----------
   let handledFree = false;
 
