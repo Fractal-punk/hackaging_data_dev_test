@@ -515,22 +515,7 @@ if (e.button === 0) {
 // pan move (window-level)
 window.addEventListener("pointermove", (e) => {
 
-  // 1) СНАЧАЛА — мобильный pinch (2 пальца), независимо от free-mode
-  if (isCoarse && e.pointerType === "touch") {
-    if (touchPts.size >= 2 && pinchActive && pinchStartDist > 0) {
-      const pts = Array.from(touchPts.values());
-      const d = distance(pts[0], pts[1]);
-      const k = d / pinchStartDist;
-
-      // масштаб по пинчу
-      view.zoom = clamp(pinchStartZoom * k, 0.1, 10);
-      updateCameraFrustum();
-
-      e.preventDefault();
-      return;
-    }
-  }
-  // ---------- FREE MODE: edge-draw preview / drag bubble ----------
+    // ---------- FREE MODE: edge-draw preview / drag bubble ----------
   if (freeMode.on) {
     // если тянем ребро
     if (freeMode.edgeDrag.active) {
