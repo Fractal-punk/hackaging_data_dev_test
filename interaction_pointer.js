@@ -502,14 +502,16 @@ if (e.button === 0) {
 window.addEventListener("pointermove", (e) => {
   // ---------- FREE MODE: edge-draw preview / drag bubble ----------
   if (freeMode.on) {
-    // 1) Если тянем ребро и режим РЕАЛЬНО включён — нормальный превью/hover
-    if (freeMode.edgeDrag.active && freeMode.edgeDrawMode) {
+    // если тянем ребро
+    if (freeMode.edgeDrag.active) {
+      // world point для превью берём по Z плоскости исходного шара
       const fromB = bubbles.find(bb => bb.id === freeMode.edgeDrag.fromBubbleId);
       const z = fromB ? fromB.mesh.position.z : 0;
 
       const wp = worldPointOnZPlane(e.clientX, e.clientY, z);
       setEdgePreview(wp);
 
+      // hover bubble для "куда отпустим"
       if (!isUIAtPoint(e.clientX, e.clientY)) {
         let hb = raycastPick(e.clientX, e.clientY);
         if (!hb) hb = pickBubbleByScreenDistance(e.clientX, e.clientY);
@@ -522,16 +524,7 @@ window.addEventListener("pointermove", (e) => {
       return;
     }
 
-    // 2) Если edgeDrag.active остался висеть, но кнопку уже выключили —
-    //    аккуратно гасим этот режим и НЕ блокируем пан/зум.
-    if (freeMode.edgeDrag.active && !freeMode.edgeDrawMode) {
-      cancelEdgeDrag();
-      clearEdgePreview();
-      updateEdgeDragHover(null);
-      // без return — дальше пойдут обычные pinch/pan/drag
-    }
-
-    // 3) Перетаскивание шара в free-mode
+    // если перетаскиваем шар
     if (freeDragActive && freeDragBubble) {
       const z = freeDragBubble.mesh.position.z;
       const wp = worldPointOnZPlane(e.clientX, e.clientY, z);

@@ -12,7 +12,8 @@ import {
   setDeleteMode,          // ← добавили
   setActiveMetric,
   setEdgeDragMetric,
-  setEdgeDeleteMode
+  setEdgeDeleteMode,
+  cancelEdgeDrag
 } from "./free_mode.js";
 import { rebuildGraph } from "./graph_edges.js";
 
@@ -383,12 +384,20 @@ if (btnFreeDeleteEdge) {
   }
 
   if (btnToggleEdgeDraw) {
+  applyEdgeDrawUI();
+  btnToggleEdgeDraw.addEventListener("click", () => {
+    const willOn = !freeMode.edgeDrawMode;
+    freeMode.edgeDrawMode = willOn;
     applyEdgeDrawUI();
-    btnToggleEdgeDraw.addEventListener("click", () => {
-      freeMode.edgeDrawMode = !freeMode.edgeDrawMode;
-      applyEdgeDrawUI();
-    });
-  }
+
+    // Если режим выключаем — сбрасываем любой висящий edge-drag
+    if (!willOn && freeMode.edgeDrag && freeMode.edgeDrag.active) {
+      cancelEdgeDrag();
+      // превью линий и hover-таргет edge-драга cancelEdgeDrag уже должен чистить
+        }
+      });
+    }
+
 
   if (btnToggleTheme2) btnToggleTheme2.addEventListener("click", () => toggleTheme());
 
