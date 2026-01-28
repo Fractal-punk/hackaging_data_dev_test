@@ -500,18 +500,16 @@ if (e.button === 0) {
 
 // pan move (window-level)
 window.addEventListener("pointermove", (e) => {
-    // ---------- FREE MODE: edge-draw preview / drag bubble ----------
+  // ---------- FREE MODE: edge-draw preview / drag bubble ----------
   if (freeMode.on) {
-    // если тянем ребро
-    if (freeMode.edgeDrag.active) {
-      // world point для превью берём по Z плоскости исходного шара
+    // 1) Если тянем ребро и режим РЕАЛЬНО включён — нормальный превью/hover
+    if (freeMode.edgeDrag.active && freeMode.edgeDrawMode) {
       const fromB = bubbles.find(bb => bb.id === freeMode.edgeDrag.fromBubbleId);
       const z = fromB ? fromB.mesh.position.z : 0;
 
       const wp = worldPointOnZPlane(e.clientX, e.clientY, z);
       setEdgePreview(wp);
 
-      // hover bubble для "куда отпустим"
       if (!isUIAtPoint(e.clientX, e.clientY)) {
         let hb = raycastPick(e.clientX, e.clientY);
         if (!hb) hb = pickBubbleByScreenDistance(e.clientX, e.clientY);
@@ -524,7 +522,16 @@ window.addEventListener("pointermove", (e) => {
       return;
     }
 
-    // если перетаскиваем шар
+    // 2) Если edgeDrag.active остался висеть, но кнопку уже выключили —
+    //    аккуратно гасим этот режим и НЕ блокируем пан/зум.
+    if (freeMode.edgeDrag.active && !freeMode.edgeDrawMode) {
+      cancelEdgeDrag();
+      clearEdgePreview();
+      updateEdgeDragHover(null);
+      // без return — дальше пойдут обычные pinch/pan/drag
+    }
+
+    // 3) Перетаскивание шара в free-mode
     if (freeDragActive && freeDragBubble) {
       const z = freeDragBubble.mesh.position.z;
       const wp = worldPointOnZPlane(e.clientX, e.clientY, z);
@@ -532,7 +539,6 @@ window.addEventListener("pointermove", (e) => {
       freeDragBubble.mesh.position.x = wp.x;
       freeDragBubble.mesh.position.y = wp.y;
 
-      // чтобы после выхода из free режима не "пружинило" обратно
       freeDragBubble.targetX = wp.x;
       freeDragBubble.targetY = wp.y;
 
@@ -541,7 +547,7 @@ window.addEventListener("pointermove", (e) => {
     }
   }
 
-  // MOBILE multitouch
+   // MOBILE multitouch
   if (isCoarse && e.pointerType === "touch") {
     if (!touchPts.has(e.pointerId)) return;
 
@@ -668,7 +674,7 @@ window.addEventListener("pointerup", (e) => {
     return;
   }
   downEdgeId = null;
-  
+
   // ---------- FREE MODE: finish drag / finish edge ----------
   let handledFree = false;
 
