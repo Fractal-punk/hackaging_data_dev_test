@@ -321,27 +321,41 @@ renderer.domElement.addEventListener("pointerdown", (e) => {
 
 
     // MOBILE (touch)
-  if (isCoarse && e.pointerType === "touch") {
-    renderer.domElement.setPointerCapture?.(e.pointerId);
-    touchPts.set(e.pointerId, { x: e.clientX, y: e.clientY });
+    if (isCoarse && e.pointerType === "touch") {
+      renderer.domElement.setPointerCapture?.(e.pointerId);
+      touchPts.set(e.pointerId, { x: e.clientX, y: e.clientY });
 
-    // 2 пальца => pinch
-    if (touchPts.size === 2) {
-      const pts = Array.from(touchPts.values());
+     
+        // 2 пальца => pinch, ПРЕРЫВАЕМ любые edge-drag / drag bubble
+  if (touchPts.size === 2) {
+    const pts = Array.from(touchPts.values());
 
-      pinchActive = true;
-      pinchStartDist = distance(pts[0], pts[1]);
-      pinchStartZoom = view.zoom;
-
-      // во время pinch НИКАКОГО pan
-      touchPanEnabled = false;
-      touchPanStarted = false;
-      isPanning = false;
-      panButton = null;
-
-      e.preventDefault();
-      return;
+    // Если тянули ребро — отменяем
+    if (freeMode.on && freeMode.edgeDrag && freeMode.edgeDrag.active) {
+      cancelEdgeDrag();
+      clearEdgePreview();
+      updateEdgeDragHover(null);
     }
+
+    // Если тянули шар — отменяем
+    freeDragActive = false;
+    freeDragPending = false;
+    freeDragBubble = null;
+
+    pinchActive = true;
+    pinchStartDist = distance(pts[0], pts[1]);
+    pinchStartZoom = view.zoom;
+
+    touchPanEnabled = false;
+    touchPanStarted = false;
+    isPanning = false;
+    panButton = null;
+
+    e.preventDefault();
+    return;
+  }
+
+  
 
     // ----- ОДИН ПАЛЕЦ -----
     // Если свободный режим включён — сначала пытаемся работать с шарами
@@ -500,6 +514,22 @@ if (e.button === 0) {
 
 // pan move (window-level)
 window.addEventListener("pointermove", (e) => {
+
+  // 1) СНАЧАЛА — мобильный pinch (2 пальца), независимо от free-mode
+  if (isCoarse && e.pointerType === "touch") {
+    if (touchPts.size >= 2 && pinchActive && pinchStartDist > 0) {
+      const pts = Array.from(touchPts.values());
+      const d = distance(pts[0], pts[1]);
+      const k = d / pinchStartDist;
+
+      // масштаб по пинчу
+      view.zoom = clamp(pinchStartZoom * k, 0.1, 10);
+      updateCameraFrustum();
+
+      e.preventDefault();
+      return;
+    }
+  }
   // ---------- FREE MODE: edge-draw preview / drag bubble ----------
   if (freeMode.on) {
     // если тянем ребро
@@ -807,3 +837,15 @@ window.addEventListener("pointerleave", () => {
   touchPanEnabled = false;
   touchPanStarted = false;
 }, { passive: true });
+
+document.addEventListener(
+  "touchmove",
+  (e) => {
+    // если тык не внутри HUD / тултипов / панелей — не даём странице двигаться
+    const el = document.elementFromPoint(e.touches[0].clientX, e.touches[0].clientY);
+    if (!el || !el.closest("#hudWrap") && !el.closest("#trialsPanel")) {
+      e.preventDefault();
+    }
+  },
+  { passive: false }
+);
