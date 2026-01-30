@@ -168,13 +168,23 @@ function applyEdgeDeleteUI() {
 if (btnFreeDeleteEdge) {
   applyEdgeDeleteUI();
   btnFreeDeleteEdge.addEventListener("click", () => {
-    // выключаем конфликтующие режимы
-    freeMode.edgeDrawMode = false;
+    const willOn = !freeMode.edgeDeleteMode;
+    freeMode.edgeDeleteMode = willOn;
 
-    freeMode.edgeDeleteMode = !freeMode.edgeDeleteMode;
+    if (willOn) {
+      // включили режим удаления → гасим построение графа
+      freeMode.edgeDrawMode = false;
+      applyEdgeDrawUI();
+
+      if (freeMode.edgeDrag && freeMode.edgeDrag.active) {
+        cancelEdgeDrag();
+      }
+    }
+
     applyEdgeDeleteUI();
   });
 }
+
 
   function applyShowEdgeMetricsUI() {
     if (!btnFreeShowEdgeMetrics) return;
@@ -194,6 +204,36 @@ if (btnFreeDeleteEdge) {
       // updateGraphEdges и так крутится, отдельно дёргать не обязательно
     });
   }
+
+      function setExclusiveFreeTool(mode) {
+    // mode: "labels" | "edgeDraw" | "hideSector"
+
+    const wantLabels = mode === "labels";
+    const wantEdge   = mode === "edgeDraw";
+    const wantHide   = mode === "hideSector";
+
+    // 1) выставляем флаги состояний для трёх основных режимов
+    freeMode.labelsEnabled = wantLabels;
+    freeMode.edgeDrawMode  = wantEdge;
+    setDeleteMode(wantHide);  // управляет freeMode.deleteMode внутри free_mode.js
+
+    // 2) при любом эксклюзивном режиме — удаление связи точно выключено
+    freeMode.edgeDeleteMode = false;
+
+    // 3) обновляем UI
+    applyFreeLabelsUI();
+    applyEdgeDrawUI();
+    applyFreeHideModeUI();
+    applyEdgeDeleteUI();      // ← добавили
+    applyLabelsInteractivity();
+
+    // 4) если режим рисования рёбер выключился — сбросить висящий drag
+    if (!wantEdge && freeMode.edgeDrag && freeMode.edgeDrag.active) {
+      cancelEdgeDrag();
+    }
+  }
+
+
 
     // --- Удалить все рёбра ---
   if (btnFreeClearEdges) {
@@ -352,13 +392,22 @@ if (btnFreeDeleteEdge) {
 }
 
   // --- Убрать сектор (режим удаления) ---
-  if (btnFreeHideMode) {
+    if (btnFreeHideMode) {
     applyFreeHideModeUI();
     btnFreeHideMode.addEventListener("click", () => {
-      setDeleteMode(!freeMode.deleteMode);
-      applyFreeHideModeUI();
+      const willOn = !freeMode.deleteMode;
+
+      if (willOn) {
+        // включаем режим удаления сектора → гасим инфо и граф
+        setExclusiveFreeTool("hideSector");
+      } else {
+        // просто выключаем режим удаления
+        setDeleteMode(false);
+        applyFreeHideModeUI();
+      }
     });
   }
+
 
   // --- Вернуть сектор (тот же стек poppedStack, что и в обычном HUD) ---
   if (btnFreeUndoPop) {
@@ -373,30 +422,44 @@ if (btnFreeDeleteEdge) {
  }
 
 
-  if (btnToggleFreeLabels) {
+    if (btnToggleFreeLabels) {
     applyFreeLabelsUI();
     btnToggleFreeLabels.addEventListener("click", () => {
-      freeMode.labelsEnabled = !freeMode.labelsEnabled;
-      // важно: реально включить/выключить pointer-events у labels (см. ниже)
-      applyFreeLabelsUI();
-      applyLabelsInteractivity();
+      const willOn = !freeMode.labelsEnabled;
+
+      if (willOn) {
+        // включаем режим инфо → остальное гасим
+        setExclusiveFreeTool("labels");
+      } else {
+        // просто выключаем инфо, остальные остаются как есть (все off)
+        freeMode.labelsEnabled = false;
+        applyFreeLabelsUI();
+        applyLabelsInteractivity();
+      }
     });
   }
 
-  if (btnToggleEdgeDraw) {
-  applyEdgeDrawUI();
-  btnToggleEdgeDraw.addEventListener("click", () => {
-    const willOn = !freeMode.edgeDrawMode;
-    freeMode.edgeDrawMode = willOn;
-    applyEdgeDrawUI();
 
-    // Если режим выключаем — сбрасываем любой висящий edge-drag
-    if (!willOn && freeMode.edgeDrag && freeMode.edgeDrag.active) {
-      cancelEdgeDrag();
-      // превью линий и hover-таргет edge-драга cancelEdgeDrag уже должен чистить
+    if (btnToggleEdgeDraw) {
+    applyEdgeDrawUI();
+    btnToggleEdgeDraw.addEventListener("click", () => {
+      const willOn = !freeMode.edgeDrawMode;
+
+      if (willOn) {
+        // включаем построение графа → гасим инфо и hideSector
+        setExclusiveFreeTool("edgeDraw");
+      } else {
+        // просто выключаем
+        freeMode.edgeDrawMode = false;
+        applyEdgeDrawUI();
+
+        if (freeMode.edgeDrag && freeMode.edgeDrag.active) {
+          cancelEdgeDrag();
         }
-      });
-    }
+      }
+    });
+  }
+
 
 
   if (btnToggleTheme2) btnToggleTheme2.addEventListener("click", () => toggleTheme());
